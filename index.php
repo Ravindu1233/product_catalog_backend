@@ -16,7 +16,12 @@ try {
 } catch (RuntimeException $e) {
     http_response_code(500);
 
-    if (isset($_GET['action']) && $_GET['action'] === 'detail') {
+    $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+    $isApiRequest = strncmp($path, '/api/', 5) === 0
+        || (isset($_GET['action']) && in_array($_GET['action'], ['detail', 'list'], true));
+
+    if ($isApiRequest) {
+        header('Access-Control-Allow-Origin: *');
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode([
             'success' => false,

@@ -1,6 +1,13 @@
-# Mini Product Catalog
+# Mini Product Catalog Backend
 
-A lightweight e-commerce product showcase built with native object-oriented PHP, MySQL, Bootstrap 5, and vanilla ES6 JavaScript. No PHP framework is used.
+A lightweight product catalog backend built with native object-oriented PHP, MySQL, PDO, Bootstrap 5, and vanilla JavaScript.
+
+## Requirements
+
+- PHP 8.0 or newer
+- MySQL 5.7+ or MariaDB 10.3+
+- PDO and `pdo_mysql` enabled in PHP
+- A terminal such as PowerShell
 
 ## Project Structure
 
@@ -8,11 +15,8 @@ A lightweight e-commerce product showcase built with native object-oriented PHP,
 product_catalog_backend/
 |-- app/
 |   |-- Controllers/
-|   |   `-- ProductController.php
 |   |-- Models/
-|   |   `-- Product.php
 |   `-- Views/
-|       `-- catalog.php
 |-- config/
 |   |-- database.php
 |   `-- DbConnection.php
@@ -20,66 +24,92 @@ product_catalog_backend/
 |   `-- products.sql
 |-- public/
 |   `-- assets/
-|       |-- css/
-|       |   `-- catalog.css
-|       |-- images/
-|       |   `-- placeholder.svg
-|       `-- js/
-|           `-- catalog.js
 |-- .htaccess
 |-- index.php
 |-- router.php
 `-- README.md
 ```
 
-## Requirements
+## How to Run
 
-- PHP 8.0 or newer
-- MySQL 5.7+ or MariaDB 10.3+
-- PDO and pdo_mysql enabled
+### 1. Open the backend folder
 
-## Setup
-
-1. Import the database:
-
-```bash
-mysql -u root -p < database/products.sql
+```powershell
+cd "C:\Users\Dell\Desktop\Product Catalog\product_catalog_backend"
 ```
 
-This creates the `product_catalog` database, the `products` table, and four sample products.
+### 2. Start MySQL
 
-2. Update the database credentials in `config/database.php`:
+Start MySQL from your local server tool, such as XAMPP, WAMP, Laragon, or MySQL installed directly on Windows.
+
+### 3. Import the database
+
+Run this command from the backend folder:
+
+```powershell
+mysql -u root -p < database\products.sql
+```
+
+When prompted, enter your MySQL password.
+
+This creates the `product_catalog` database, creates the `products` table, and inserts sample products.
+
+If your MySQL user has no password, use:
+
+```powershell
+mysql -u root < database\products.sql
+```
+
+### 4. Check database credentials
+
+Open `config/database.php` and make sure these values match your local MySQL setup:
 
 ```php
 define('DB_HOST', 'localhost');
 define('DB_PORT', '3306');
 define('DB_NAME', 'product_catalog');
 define('DB_USER', 'root');
-define('DB_PASS', '');
+define('DB_PASS', 'root');
 define('DB_CHARSET', 'utf8mb4');
 ```
 
-3. Run the application from the project root:
+Change `DB_PASS` if your MySQL password is different. For many XAMPP setups, the password is empty:
 
-```bash
+```php
+define('DB_PASS', '');
+```
+
+### 5. Start the PHP development server
+
+Run this command from the backend folder:
+
+```powershell
 php -S localhost:8000 router.php
 ```
 
-4. Open the catalog:
+### 6. Open the application
+
+Open this URL in your browser:
 
 ```text
 http://localhost:8000
 ```
 
-## API Endpoint
+## API Endpoints
 
-Product detail JSON is returned by:
+Get the product catalog page:
+
+```text
+GET /
+```
+
+Get product details as JSON:
 
 ```text
 GET /?action=detail&id=1
 ```
 
-Example success response:
+Example response:
 
 ```json
 {
@@ -95,12 +125,20 @@ Example success response:
 }
 ```
 
-Invalid IDs return `400 Bad Request`; missing products return `404 Not Found`.
+## Troubleshooting
 
-## Assignment Coverage
+- If `mysql` is not recognized, add MySQL to your Windows PATH or run the command from the MySQL `bin` folder.
+- If `php` is not recognized, add PHP to your Windows PATH or use the PHP executable path directly.
+- If the page shows a database error, check `config/database.php`.
+- If port `8000` is already in use, run the server on another port:
 
-- `database/products.sql` creates the required `products` table and inserts four sample records.
-- `app/Models/Product.php` uses PDO and includes `getAll()` and `getById($id)`.
-- `app/Controllers/ProductController.php` routes normal catalog requests and JSON API detail requests.
-- `app/Views/catalog.php` renders a Bootstrap product grid and a single reusable detail modal.
-- `public/assets/js/catalog.js` uses native `fetch()` to load modal content without reloading the page.
+```powershell
+php -S localhost:8080 router.php
+```
+
+Then open:
+
+```text
+http://localhost:8080
+```
+

@@ -30,9 +30,21 @@ class ProductController
      */
     public function handleRequest(): void
     {
+        $this->sendCorsHeaders();
+
+        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+            http_response_code(204);
+            return;
+        }
+
+        $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
         $action = isset($_GET['action']) ? trim($_GET['action']) : '';
 
-        if ($action === 'detail') {
+        if ($path === '/api/products' || $action === 'list') {
+            $this->handleApiList();
+        } elseif (preg_match('#^/api/products/(\d+)$#', $path, $matches) === 1) {
+            $this->handleApiDetail((int) $matches[1]);
+        } elseif ($action === 'detail') {
             $this->handleApiDetail();
         } else {
             $this->renderCatalogView();
@@ -43,6 +55,29 @@ class ProductController
     // Private handlers
     // -------------------------------------------------------------------------
 
+    private function sendCorsHeaders(): void
+    {
+        header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Allow-Methods: GET, OPTIONS');
+        header('Access-Control-Allow-Headers: Content-Type, Accept');
+    }
+
+    private function handleApiList(): void
+    {
+        header('Content-Type: application/json; charset=utf-8');
+
+        $products = array_map(static function (array $product): array {
+            $product['price'] = (float) $product['price'];
+            return $product;
+        }, $this->productModel->getAll());
+
+        http_response_code(200);
+        echo json_encode([
+            'success' => true,
+            'data'    => $products,
+        ]);
+    }
+
     /**
      * API endpoint: ?action=detail&id=X
      *
@@ -50,16 +85,20 @@ class ProductController
      *
      * @return void
      */
-    private function handleApiDetail(): void
+    private function handleApiDetail(?int $routeId = null): void
     {
         header('Content-Type: application/json; charset=utf-8');
 
-        // Validate that `id` is a positive integer.
-        $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT, [
-            'options' => ['min_range' => 1],
-        ]);
+        $id = $routeId;
 
-        if ($id === false || $id === null) {
+        if ($id === null) {
+            // Validate that `id` is a positive integer.
+            $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT, [
+                'options' => ['min_range' => 1],
+            ]);
+        }
+
+        if ($id === false || $id === null || $id < 1) {
             http_response_code(400);
             echo json_encode([
                 'success' => false,
