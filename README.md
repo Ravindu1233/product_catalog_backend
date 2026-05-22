@@ -1,13 +1,16 @@
-# Mini Product Catalog Backend
+# Mini Product Catalog
 
-A lightweight product catalog backend built with native object-oriented PHP, MySQL, PDO, Bootstrap 5, and vanilla JavaScript.
+This is a small product catalog project made with raw PHP, MySQL, Bootstrap and normal JavaScript.
 
-## Requirements
+The page shows products in a grid. When the user clicks the View Details button, product details are loaded using `fetch()` and shown inside a modal without refreshing the page.
 
-- PHP 8.0 or newer
-- MySQL 5.7+ or MariaDB 10.3+
-- PDO and `pdo_mysql` enabled in PHP
-- A terminal such as PowerShell
+## Used Technologies
+
+- PHP
+- MySQL
+- PDO
+- Bootstrap 5
+- JavaScript
 
 ## Project Structure
 
@@ -24,45 +27,50 @@ product_catalog_backend/
 |   `-- products.sql
 |-- public/
 |   `-- assets/
-|-- .htaccess
 |-- index.php
 |-- router.php
 `-- README.md
 ```
 
-## How to Run
+## Setup Instructions
 
-### 1. Open the backend folder
+### 1. Start MySQL
+
+Start MySQL using XAMPP, WAMP, Laragon or any other local MySQL setup.
+
+### 2. Import the database
+
+Open terminal inside the project folder:
 
 ```powershell
 cd "C:\Users\Dell\Desktop\Product Catalog\product_catalog_backend"
 ```
 
-### 2. Start MySQL
-
-Start MySQL from your local server tool, such as XAMPP, WAMP, Laragon, or MySQL installed directly on Windows.
-
-### 3. Import the database
-
-Run this command from the backend folder:
+Then run:
 
 ```powershell
 mysql -u root -p < database\products.sql
 ```
 
-When prompted, enter your MySQL password.
+After that enter your MySQL password.
 
-This creates the `product_catalog` database, creates the `products` table, and inserts sample products.
-
-If your MySQL user has no password, use:
+If your MySQL root user has no password, use this command:
 
 ```powershell
 mysql -u root < database\products.sql
 ```
 
-### 4. Check database credentials
+This will create the database, products table and sample product records.
 
-Open `config/database.php` and make sure these values match your local MySQL setup:
+### 3. Update database details
+
+Open this file:
+
+```text
+config/database.php
+```
+
+Check these values and change them if needed:
 
 ```php
 define('DB_HOST', 'localhost');
@@ -73,13 +81,13 @@ define('DB_PASS', 'root');
 define('DB_CHARSET', 'utf8mb4');
 ```
 
-Change `DB_PASS` if your MySQL password is different. For many XAMPP setups, the password is empty:
+For XAMPP, password is usually empty, so use:
 
 ```php
 define('DB_PASS', '');
 ```
 
-### 5. Start the PHP development server
+### 4. Run the project
 
 Run this command from the backend folder:
 
@@ -87,29 +95,27 @@ Run this command from the backend folder:
 php -S localhost:8000 router.php
 ```
 
-### 6. Open the application
-
-Open this URL in your browser:
+Then open this URL in the browser:
 
 ```text
 http://localhost:8000
 ```
 
-## API Endpoints
+## API Details
 
-Get the product catalog page:
+Main product page:
 
 ```text
 GET /
 ```
 
-Get product details as JSON:
+Product detail API:
 
 ```text
 GET /?action=detail&id=1
 ```
 
-Example response:
+Example JSON response:
 
 ```json
 {
@@ -125,12 +131,23 @@ Example response:
 }
 ```
 
-## Troubleshooting
+## Notes
 
-- If `mysql` is not recognized, add MySQL to your Windows PATH or run the command from the MySQL `bin` folder.
-- If `php` is not recognized, add PHP to your Windows PATH or use the PHP executable path directly.
-- If the page shows a database error, check `config/database.php`.
-- If port `8000` is already in use, run the server on another port:
+- The database file is in `database/products.sql`.
+- The model file is `app/Models/Product.php`.
+- The controller file is `app/Controllers/ProductController.php`.
+- The main view file is `app/Views/catalog.php`.
+- JavaScript file is `public/assets/js/catalog.js`.
+
+## Common Issues
+
+If `php` command is not working, PHP may not be added to PATH.
+
+If `mysql` command is not working, MySQL may not be added to PATH.
+
+If database connection fails, check the username and password in `config/database.php`.
+
+If port `8000` is already used, run with another port:
 
 ```powershell
 php -S localhost:8080 router.php
@@ -141,4 +158,3 @@ Then open:
 ```text
 http://localhost:8080
 ```
-
